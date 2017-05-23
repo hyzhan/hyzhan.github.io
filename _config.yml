@@ -71,3 +71,4 @@ deploy:
   type: git
   repo:
     github: git@github.com:hyzhan/hyzhan.github.io.git,master
+mathjax: true
