@@ -1,0 +1,788 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="math," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="逻辑回归LR推导（sigmoid，损失函数，梯度，参数更新公式）">
+<meta name="keywords" content="math">
+<meta property="og:type" content="article">
+<meta property="og:title" content="逻辑回归LR推导（sigmoid，损失函数，梯度，参数更新公式）">
+<meta property="og:url" content="http://hyzhan.github.io/2017/05/23/2017-05-23-逻辑回归LR推导（sigmoid，损失函数，梯度，参数更新公式）/index.html">
+<meta property="og:site_name" content="hyzhan">
+<meta property="og:description" content="逻辑回归LR推导（sigmoid，损失函数，梯度，参数更新公式）">
+<meta property="og:updated_time" content="2017-05-23T14:33:28.534Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="逻辑回归LR推导（sigmoid，损失函数，梯度，参数更新公式）">
+<meta name="twitter:description" content="逻辑回归LR推导（sigmoid，损失函数，梯度，参数更新公式）">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"hide","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://hyzhan.github.io/2017/05/23/2017-05-23-逻辑回归LR推导（sigmoid，损失函数，梯度，参数更新公式）/"/>
+
+
+
+
+
+  <title> 逻辑回归LR推导（sigmoid，损失函数，梯度，参数更新公式） | hyzhan </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">hyzhan</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://hyzhan.github.io/2017/05/23/2017-05-23-逻辑回归LR推导（sigmoid，损失函数，梯度，参数更新公式）/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="hyzhan">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="hyzhan">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                逻辑回归LR推导（sigmoid，损失函数，梯度，参数更新公式）
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-23T20:00:00+08:00">
+                2017-05-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/machine-learning/" itemprop="url" rel="index">
+                    <span itemprop="name">machine learning</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  逻辑回归LR推导（sigmoid，损失函数，梯度，参数更新公式）
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p>主要参考文献：<a href="http://www.win-vector.com/dfiles/LogisticRegressionMaxEnt.pdf" target="_blank" rel="external">The equivalence of logistic regression and maximum entropy models,John Mount</a><br><a id="more"></a></p>
+<h2 id="一、声明"><a href="#一、声明" class="headerlink" title="一、声明"></a>一、声明</h2><ol>
+<li>$ x(1),x(2),…,x(m) $ 表示 n 维空间的一个样本，$x(i)$ 表示第i个样本，$x(i)_j$ 表示第i个样本的第j维的数据（因为$x$是一个n维向量）。</li>
+<li>$y(1),y(2),…,y(m)$ 表示 k 维空间的一个观测结果，记k从1,2,…,k变化，即分类问题中的k个类别，也可以0为下标开始，不影响推导。</li>
+<li><p>$\pi()$是我们学习到的概率函数，实现样本数据到预测结果的映射：$R^n\rightarrow R^k$，（其实就是样本经过函数 $\pi()$计算后得到各个类别的预测概率，即一个k维向量），<br>$\pi(x)_u$表示数据样本x属于类别u的概率，我们希望$\pi()$具有如下性质：</p>
+<blockquote>
+<ol>
+<li>$\pi(x)_v&gt;0$  (样本x属于类别v的概率大于0，显然概率必须大于0)</li>
+<li>$\sum_{v=1}^k\pi(x)_v = 1$,样本x属于各个类别的概率和为1</li>
+<li>$\pi(x(i))_{y(i)}在所有类别概率中最大$</li>
+</ol>
+</blockquote>
+</li>
+<li><p>$A(u,v)$是一个指示函数，$当u=v时A(u,v)=1，当u\neq v时A(u,v)=0，如A(u,y(i))$表示第i个观测结果是否为u</p>
+</li>
+</ol>
+<h2 id="二、逻辑回归求解分类问题过程"><a href="#二、逻辑回归求解分类问题过程" class="headerlink" title="二、逻辑回归求解分类问题过程"></a>二、逻辑回归求解分类问题过程</h2><p>对于二分类问题有k=2，对线性回归函数$\lambda x$进行非线性映射得到：<br><span>$\pi(x)_1 = \frac{\rm e^{\lambda \cdot x}}{\rm e^{\lambda \cdot x}+1}\tag{1}$</span><!-- Has MathJax --><br><span>$\pi(x)_2 = 1-\pi(x)_1= \frac{1}{\rm e^{\lambda \cdot x}+1}\tag{2}$</span><!-- Has MathJax --><br>对于多分类问题有：<br><span>$\pi(x) = \frac{\rm e^{\lambda _v\cdot x}}{\sum_{u=1}^m\rm e^{\lambda_u \cdot x}}\tag{3}$</span><!-- Has MathJax --><br>对$\lambda$求偏导可得：<br><span>$$\begin{aligned}
+u = v 时，
+\frac {\partial\,\pi (x)_v}{\lambda_{v,j}} &amp;= \frac{x_j\rm e^{\lambda _{v,j}\cdot x}\cdot \sum_{u=1}^m\rm e^{\lambda_{u,j} \cdot x}-x_j\rm e^{\lambda _{v,j}\cdot x}\rm e^{\lambda _{v,j}\cdot x}}{(\sum_{u=1}^m\rm e^{\lambda_{u,j} \cdot x})^2}\\
+&amp; = \frac{x_j\rm e^{\lambda _{v,j}\cdot x}}{\sum_{u=1}^m\rm e^{\lambda_{u,j} \cdot x}} \cdot \frac{\sum_{u=1}^m\rm e^{\lambda_{u,j} \cdot x}-\rm e^{\lambda_{v,j}\cdot x}}{\sum_{u=1}^m\rm e^{\lambda_{u,j} \cdot x}}\\
+&amp; = x_j \pi(x)_v(1-\pi(x)_v)
+\end{aligned}
+\tag{4}$$</span><!-- Has MathJax --><br><span>$$\begin{aligned}
+u \neq v 时
+\frac {\partial\,\pi (x)_v}{\lambda_{u,j}}&amp;=-\frac{\rm e^{\lambda_{v,j} \cdot x} \cdot (x_j\rm e^{\lambda_{u,j} \cdot x})}{(\sum_{u=1}^m\rm e^{\lambda_{u,j} \cdot x})^2} \\
+&amp;= -x_j \pi(x)_v\pi(x)_u, u\neq v时
+\end{aligned}
+\tag{5}$$</span><!-- Has MathJax --><br>该分类问题的最大似然函数为：<br><span>$L(\lambda)=\prod_{i=1}^m \pi(x(i))_{y(i)}\tag{6}$</span><!-- Has MathJax --><br>取对数得：<br><span>$f(\lambda)=\log L(\lambda)=\sum_{i=1}^m \log(\pi(x(i))_{y(i)})\tag{7}$</span><!-- Has MathJax --><br>求似然函数最大值，令：<br><span>$$\begin{aligned}
+\frac{\partial\,f(\lambda)}{\partial \,\lambda_{u,j}} &amp;=\frac{\partial}{\partial \,\lambda_{u,j}}\sum_{i=1}^m \log(\pi(x(i))_{y(i)}) \\
+&amp;= \sum_{i=1}^m \frac{1}{\pi(x(i))_{y(i)}}\frac{\partial}{\partial \,\lambda_{u,j}}\pi(x(i))_{y(i)} \\
+&amp;= \sum_{\begin{array}{c}i=1,\\y(i)=u\end{array}}^m \frac{1}{\pi(x(i))_{y(i)}}\frac{\partial}{\partial \,\lambda_{u,j}}\pi(x(i))_{u} + \sum_{\begin{array}{c}i=1,\\y(i)\neq u\end{array}}^m \frac{1}{\pi(x(i))_{y(i)}}\frac{\partial}{\partial \,\lambda_{u,j}}\pi(x(i))_{y(i)}\\
+&amp;= \sum_{\begin{array}{c}i=1,\\y(i)=u\end{array}}^m \frac{1}{\pi(x(i))_{y(i)}}x(i)_j\pi(x(i))_u(1-\pi(x(i))_u) \\
+&amp;\quad - \sum_{\begin{array}{c}i=1,\\y(i)\neq u\end{array}}^m \frac{1}{\pi(x(i))_{y(i)}}x(i)_j\pi(x(i))_{y(i)} \pi(x(i))_u\\
+&amp;= \sum_{\begin{array}{c}i=1,\\y(i)=u\end{array}}^m x(i)_j(1-\pi(x(i))_u)-\sum_{\begin{array}{c}i=1,\\y(i)\neq u\end{array}}^m x(i)_j \pi(x(i))_u \\
+&amp;= \sum_{\begin{array}{c}i=1,\\y(i)=u\end{array}}^m x(i)_j - \sum_{i=1}^m x(i)_j\pi(x(i))_u \\
+&amp;= 0
+\end{aligned}
+\tag{8}$$</span><!-- Has MathJax --><br>得：<br><span>$\sum_{\begin{array}{c}i=1,\\y(i)=u\end{array}}^m x(i)_j = \sum_{i=1}^m x(i)_j\pi(x(i))_u\tag{9}$</span><!-- Has MathJax --><br>代入$A(u,y(i))=1$得：<br><span>$\sum_{i=1}^m x(i)_j\pi(x(i))_u = \sum_{i=1}^m x(i)_jA(u,y(i))\tag{10}$</span><!-- Has MathJax --><br>综上有：<br><span>$$\frac{\partial\,f(\lambda)}{\partial \,\lambda_{u,j}}=\sum_{i=1}^m x(i)_j(A(u,y(i))-\pi(x(i))_u)
+\tag{11}$$</span><!-- Has MathJax --><br>则参数更新公式为：<br><span>$$\begin{aligned}
+\lambda_{u,j} &amp;= \lambda_{u,j} - \alpha \cdot \frac{\partial\,f(\lambda)}{\partial \,\lambda_{u,j}} \\
+&amp;= \lambda_{u,j} - \alpha \cdot \sum_{i=1}^m x(i)_j(A(u,y(i))-\pi(x(i))_u)
+\end{aligned}
+\tag{12}$$</span><!-- Has MathJax --></p>
+<h3 id="那这就就存在个问题：为什么一开始要使用sigmoid函数进行非线性映射呢？其他函数不行吗？sigmoid函数怎么得来的？"><a href="#那这就就存在个问题：为什么一开始要使用sigmoid函数进行非线性映射呢？其他函数不行吗？sigmoid函数怎么得来的？" class="headerlink" title="那这就就存在个问题：为什么一开始要使用sigmoid函数进行非线性映射呢？其他函数不行吗？sigmoid函数怎么得来的？"></a><strong>那这就就存在个问题：为什么一开始要使用sigmoid函数进行非线性映射呢？其他函数不行吗？sigmoid函数怎么得来的？</strong></h3><h2 id="三、sigmoid函数的由来（最大熵）"><a href="#三、sigmoid函数的由来（最大熵）" class="headerlink" title="三、sigmoid函数的由来（最大熵）"></a>三、sigmoid函数的由来（最大熵）</h2><p>由上文已知$\pi()$具应有如下性质：</p>
+<blockquote>
+<ol>
+<li>样本x属于类别v的概率大于0，显然概率必须大于0$\pi(x)_v&gt;0\tag{13}$ </li>
+<li>样本x属于各个类别的概率和为1 $\sum_{v=1}^k\pi(x)_v = 1\tag{14}$</li>
+<li>$\pi(x(i))_{y(i)}在所有类别概率中最大$</li>
+</ol>
+</blockquote>
+<p>其中对最后一个条件等价于尽可能的让$\pi(x(i))\rightarrow y(i)$ 即 $\pi(x(i))\rightarrow A(u,y(i))$，理想情况为$\pi(x(i))= A(u,y(i))$固有：<br><span>$\sum_{i=1}^m x(i)_j\pi(x(i))_u = \sum_{i=1}^m x(i)_jA(u,y(i))\tag{15}，对所有的u，j都成立$</span><!-- Has MathJax --></p>
+<p>对所有类别及所有样本取$\pi()$的熵，得：<br><span>$$f(v,i)=-\sum_{v=1}^k\sum_{i=1}^m\pi(x(i))_v \log(\pi(x(i))_v)
+\tag{16}$$</span><!-- Has MathJax --><br>得到一个优化问题：<br><span>$$\left\{
+\begin{aligned}
+max \, f(v,i)&amp;=max \, (-\sum_{v=1}^k\sum_{i=1}^m\pi(x(i))_v \log(\pi(x(i))_v))\\
+\pi(x)_v&amp;&gt;0\\
+\sum_{v=1}^k\pi(x)_v &amp;= 1\\
+\sum_{i=1}^m x(i)_j\pi(x(i))_u &amp;= \sum_{i=1}^m x(i)_jA(u,y(i))
+\end{aligned}
+\right.
+\tag{17}$$</span><!-- Has MathJax --><br>利用拉格朗日对偶性求这个优化问题的对偶问题，首先引入拉格朗日函数：<br><span>$$\begin{aligned}
+L &amp;= \sum_{j=1}^n\sum_{v=1}^k\lambda_{v,j} \left( \sum_{i=1}^m\pi(x(i))_vx(i)_j-A(v,y(i))x(i)_j \right)\\
+&amp;+ \sum_{v=1}^k\sum_{i=1}^m\beta_i(\pi(x(i))_v-1)\\
+&amp;- \sum_{v=1}^k\sum_{i=1}^m\pi(x(i))_v\log(\pi(x(i))_v)
+\end{aligned}
+\tag{18}$$</span><!-- Has MathJax --><br>其中<span>$\beta&lt;0$</span><!-- Has MathJax -->,由KKT条件有：<br><span>$\frac{\partial\,L}{\partial \,\pi(x(i))_u} = \lambda_u\cdot x(i)+\beta_i-\log(\pi(x(i))_u) - 1 = 0  \quad对所有i,u \tag{19}$</span><!-- Has MathJax --><br><span>$则：\pi(x(i))_u = e^{\lambda_u \cdot x(i)+\beta_i-1} \tag{20}$</span><!-- Has MathJax --><br>由（14）式得到：<br><span>$$\sum_{v=1}^k e^{\lambda_u \cdot x(i)+\beta_i-1} = 1\\
+即：e^\beta=\frac{1}{\sum_{v=1}^ke^{\lambda_u \cdot x(i)-1}} \tag{21}$$</span><!-- Has MathJax --><br>代入（21）式消去常数项得：<br><span>$\pi(x(i))_u=\frac{e^{\lambda_u \cdot x}}{\sum_{v=1}^ke^{\lambda_u \cdot x}}\tag{22}$</span><!-- Has MathJax --><br>即多分类问题对应的sigmoid函数</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/math/" rel="tag"># math</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/02/21/2017-02-21-用faster-rcnn训练自己的数据集(python版)/" rel="prev" title="用faster-rcnn训练自己的数据集(VOC2007格式,python版)">
+                用faster-rcnn训练自己的数据集(VOC2007格式,python版) <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpg"
+               alt="hyzhan" />
+          <p class="site-author-name" itemprop="name">hyzhan</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、声明"><span class="nav-number">1.</span> <span class="nav-text">一、声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、逻辑回归求解分类问题过程"><span class="nav-number">2.</span> <span class="nav-text">二、逻辑回归求解分类问题过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#那这就就存在个问题：为什么一开始要使用sigmoid函数进行非线性映射呢？其他函数不行吗？sigmoid函数怎么得来的？"><span class="nav-number">2.1.</span> <span class="nav-text">那这就就存在个问题：为什么一开始要使用sigmoid函数进行非线性映射呢？其他函数不行吗？sigmoid函数怎么得来的？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、sigmoid函数的由来（最大熵）"><span class="nav-number">3.</span> <span class="nav-text">三、sigmoid函数的由来（最大熵）</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">hyzhan</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
